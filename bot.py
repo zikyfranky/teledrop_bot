@@ -1,11 +1,9 @@
-import logging
 from telegram import ReplyKeyboardMarkup, Update
-from telegram.ext import Updater, CommandHandler, CallbackContext, RegexHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters
 from secrets_prod import BOT_TOKEN, GROUP, CHANNEL
-from flow import welcome, bep20, balance, info, end, join, forceReg, twitter
+from flow import welcome, bep20, balance, info, end, joining, forceReg, twitter_
+from helper import extract_referral
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-level=logging.INFO)
 
 updater = Updater(token=BOT_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
@@ -15,24 +13,29 @@ def start(update: Update, context: CallbackContext) -> None:
         ["Join Airdrop"],
         ["My Balance", "Information"],
     ]
+
+    name = update.message.chat.first_name
+    ref = extract_referral(update.message.text)
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+    m_welcome = welcome % name
+
+    m_welcome = m_welcome + "\n\nYou were referred by user with id %s" % ref if ref else m_welcome + ""
     
-    update.message.reply_text(welcome, reply_markup=reply_markup)
+    update.message.reply_text(m_welcome, reply_markup=reply_markup)
 
 def join(update: Update, context: CallbackContext) -> None:
-    """Starts Airdrop process"""
     keyboard = [
         ["Registration"],
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
-    update.message.reply_text(join, reply_markup=reply_markup)
+    update.message.reply_text(joining, reply_markup=reply_markup, parse_mode="Markdown")
 
 def register(update: Update, context: CallbackContext) -> None:
-    """Starts Registration process"""
     try:
         context.bot.get_chat_member(chat_id=GROUP, user_id=update.message.chat.id)
-        # member_channel = context.bot.get_chat_member(chat_id=CHANNEL, user_id=update.message.chat.id) # Keeps returning user not fund
+        member_channel = context.bot.get_chat_member(chat_id=CHANNEL, user_id=update.message.chat.id) # Keeps returning user not fund
         keyboard = [
             ["Main Menu"],
         ]
@@ -48,17 +51,14 @@ def register(update: Update, context: CallbackContext) -> None:
         update.message.reply_text(forceReg, reply_markup=reply_markup)
 
 def bep(update: Update, context: CallbackContext) -> None:
-    """Starts Registration process"""
-    
     keyboard = [
         ["Main Menu"],
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-    update.message.reply_text(twitter, reply_markup=reply_markup)
+    update.message.reply_text(twitter_, reply_markup=reply_markup)
 
 def twitter(update: Update, context: CallbackContext) -> None:
-    """Starts Registration process"""
     keyboard = [
         ["Join Airdrop"],
         ["My Balance", "Information"],
@@ -68,7 +68,6 @@ def twitter(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(info, reply_markup=reply_markup)
 
 def menu(update: Update, context: CallbackContext) -> None:
-    """Starts bot interaction"""
     keyboard = [
         ["Join Airdrop"],
         ["My Balance", "Information"],
