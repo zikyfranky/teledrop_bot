@@ -88,7 +88,7 @@ def register(update: Update, context: CallbackContext) -> None:
         return
     try:
         member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.GROUP, user_id=update.message.chat.id)
-        if member.status != ChatMember.LEFT or member.status != ChatMember.KICKED:
+        if member.status != ChatMember.LEFT & member.status != ChatMember.KICKED:
             helper.update_user(u_id, {'tg_group':'joined'}) if user['tg_group'] != 'joined' else ''
         else:
             raise Exception('Join Group')
