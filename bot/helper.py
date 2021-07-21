@@ -47,7 +47,7 @@ def fetch_user(user_id: str):
     else:
         return None
 
-def update_user(user_id: str, data):
+def update_user(user_id: str, data) -> bool:
     res = put('%s/%s' % (API_HOST, user_id), data=data).json()
     if res.get('status_code') == 200:
         print('Updated User')
