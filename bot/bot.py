@@ -41,9 +41,9 @@ def start(update: Update, context: CallbackContext) -> None:
 def join(update: Update, context: CallbackContext) -> None:
     u_id:str = update.message.chat.id
     step = helper.fetch_step(u_id)
-    if step is None:
+    if step == None:
         start(update, context)
-    elif step is steps.STARTED:
+    elif step == steps.STARTED:
         step = helper.update_step(u_id, steps.JOINING)
 
     keyboard = [
