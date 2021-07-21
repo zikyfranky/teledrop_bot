@@ -1,11 +1,10 @@
 from telegram import ReplyKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters
-from secrets_prod import BOT_TOKEN, GROUP, CHANNEL
-from flow import welcome, bep20, balance, info, end, joining, forceReg, twitter_
-from helper import extract_referral
+import _secrets
+import flow
+import helper 
 
-
-updater = Updater(token=BOT_TOKEN, use_context=True)
+updater = Updater(token=_secrets.BOT_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -15,10 +14,10 @@ def start(update: Update, context: CallbackContext) -> None:
     ]
 
     name = update.message.chat.first_name
-    ref = extract_referral(update.message.text)
+    ref = helper.extract_referral(update.message.text)
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-    m_welcome = welcome % name
+    m_welcome = flow.welcome % name
 
     m_welcome = m_welcome + "\n\nYou were referred by user with id %s" % ref if ref else m_welcome + ""
     
@@ -30,25 +29,41 @@ def join(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
-    update.message.reply_text(joining, reply_markup=reply_markup, parse_mode="Markdown")
+    update.message.reply_text(flow.joining, reply_markup=reply_markup, parse_mode="Markdown")
 
 def register(update: Update, context: CallbackContext) -> None:
     try:
-        context.bot.get_chat_member(chat_id=GROUP, user_id=update.message.chat.id)
-        member_channel = context.bot.get_chat_member(chat_id=CHANNEL, user_id=update.message.chat.id) # Keeps returning user not fund
-        keyboard = [
-            ["Main Menu"],
-        ]
-        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
-        update.message.reply_text(bep20, reply_markup=reply_markup)
+        context.bot.get_chat_member(chat_id=_secrets.GROUP, user_id=update.message.chat.id)
     except:
         keyboard = [
             ["Registration"],
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+        update.message.reply_text(flow.forceReg, reply_markup=reply_markup, parse_mode="Markdown")
+        return
+    try:
+        context.bot.get_chat_member(chat_id=_secrets.CHANNEL, user_id=update.message.chat.id) # Keeps returning user not fund
+    except:
+        try:
+            context.bot.get_chat_administrators(chat_id=_secrets.CHANNEL)
+            keyboard = [
+                ["Registration"],
+            ]
+            reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+            update.message.reply_text(
+                flow.forceReg, reply_markup=reply_markup, parse_mode="Markdown")
+        except:
+            return
         
-        update.message.reply_text(forceReg, reply_markup=reply_markup)
+    keyboard = [
+        ["Main Menu"],
+    ]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+    update.message.reply_text(flow.bep20, reply_markup=reply_markup)
+    
 
 def bep(update: Update, context: CallbackContext) -> None:
     keyboard = [
@@ -56,7 +71,7 @@ def bep(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-    update.message.reply_text(twitter_, reply_markup=reply_markup)
+    update.message.reply_text(flow.twitter, reply_markup=reply_markup)
 
 def twitter(update: Update, context: CallbackContext) -> None:
     keyboard = [
@@ -65,7 +80,7 @@ def twitter(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-    update.message.reply_text(info, reply_markup=reply_markup)
+    update.message.reply_text(flow.info, reply_markup=reply_markup)
 
 def menu(update: Update, context: CallbackContext) -> None:
     keyboard = [
@@ -76,8 +91,6 @@ def menu(update: Update, context: CallbackContext) -> None:
     
     update.message.reply_text(
         "🖱 Click one of the buttons below!", reply_markup=reply_markup)
-
-
 
 
 start_handler = CommandHandler('start', start)
