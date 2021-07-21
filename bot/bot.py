@@ -158,8 +158,8 @@ def twitter(update: Update, context: CallbackContext) -> None:
         ['My Balance', 'Information']
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    helper.update_user(u_id, {'step': steps.COMPLETED,
-                              'twitter': update.message.text})
+    helper.update_user_step(u_id, steps.COMPLETED)
+    helper.update_user_twitter(u_id, update.message.text)
     m_end = flow.end % u_id
     update.message.reply_text(
         m_end, reply_markup=reply_markup, parse_mode='Markdown')
