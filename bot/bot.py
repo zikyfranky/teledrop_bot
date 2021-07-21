@@ -19,6 +19,10 @@ def start(update: Update, context: CallbackContext) -> None:
     name:str = update.message.chat.first_name
     u_id:str = update.message.chat.id
     name = name if name else u_id
+    step = helper.fetch_step(u_id)
+
+    if step == None:
+        helper.update_step(u_id, steps.STARTED)
 
     # Get referral from start 
     ref:str = helper.extract_referral(update.message.text)
@@ -33,10 +37,9 @@ def start(update: Update, context: CallbackContext) -> None:
 
     # get ref total referrals
     total = helper.add_ref(u_id, ref) if ref else ''
-
+    print(total)
     # Notify ref that a new user joined
     context.bot.send_message(ref, flow.newRef % total, parse_mode='Markdown') if total else 'pass'
-    helper.update_step(u_id, steps.STARTED)
 
 def join(update: Update, context: CallbackContext) -> None:
     u_id:str = update.message.chat.id
@@ -73,9 +76,10 @@ def join(update: Update, context: CallbackContext) -> None:
         end_keyboard: list = [
             ['My Balance', 'Information']
         ]
+        m_end = flow.end % u_id
         reply_markup = ReplyKeyboardMarkup(end_keyboard, resize_keyboard=True)
         update.message.reply_text(
-            flow.end, reply_markup=reply_markup, parse_mode="Markdown")
+            m_end, reply_markup=reply_markup, parse_mode="Markdown")
 
 def register(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -158,8 +162,9 @@ def twitter(update: Update, context: CallbackContext) -> None:
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     helper.update_user(u_id, {'step': steps.COMPLETED,
                               'twitter': update.message.text})
+    m_end = flow.end % u_id
     update.message.reply_text(
-        flow.end, reply_markup=reply_markup, parse_mode='Markdown')
+        m_end, reply_markup=reply_markup, parse_mode='Markdown')
 
 def info(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -183,8 +188,11 @@ def balance(update: Update, context: CallbackContext) -> None:
         return
 
     user = helper.fetch_user(u_id)
-    count:int = user['refCount']
-    count = 0 if count == None else count
+    count:int = 0
+    try:
+        count = user['refCount']
+    except KeyError:
+        count = 0
 
     keyboard = [
         ['My Balance', 'Information'],
