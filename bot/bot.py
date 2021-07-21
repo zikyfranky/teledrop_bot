@@ -36,11 +36,14 @@ def start(update: Update, context: CallbackContext) -> None:
 
     # Notify ref that a new user joined
     context.bot.send_message(ref, flow.newRef % total, parse_mode='Markdown') if total else 'pass'
+    helper.update_step(u_id, steps.STARTED)
 
 def join(update: Update, context: CallbackContext) -> None:
     u_id:str = update.message.chat.id
     step = helper.fetch_step(u_id)
     if step is None:
+        start(update, context)
+    elif step is steps.STARTED:
         step = helper.update_step(u_id, steps.JOINING)
 
     keyboard = [
