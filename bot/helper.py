@@ -20,7 +20,6 @@ def add_ref(user_id:str, ref_id:str):
         raise Exception('You can\'t refer yourself')
 
     user = get('%s/%s' % (API_HOST, user_id)).json()
-    print(user)
     user_exists = user.status_code == 200
 
     if user_exists:
@@ -39,4 +38,21 @@ def add_ref(user_id:str, ref_id:str):
                 print('Invalid referral')
         else:
             print('User is already referred')
+
+def update_step(user_id:str, step:str):
+    res = put(API_HOST + '/' + user_id, data={'step':step}).json()
+    if res.status_code == 200:
+        print('Updated user step')
+        return step
+    else:
+        print('Error saving step')
+
+def fetch_step(user_id:str):
+    user = get('%s/%s' % (API_HOST, user_id)).json()
+    user_exists = user.status_code == 200
+
+    if user_exists:
+        return user.data.step
+    else: 
+        return None
 
