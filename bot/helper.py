@@ -62,7 +62,7 @@ def update_step(user_id:str, step:str):
 
 def fetch_step(user_id:str):
     user:dict = fetch_user(user_id)
-    if user is not None:
+    if user != None:
         return user['step']
     else: 
         return None
