@@ -123,7 +123,7 @@ def register(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     helper.update_step(u_id, steps.BEP20)
-    update.message.reply_text(flow.bep20, reply_markup=reply_markup)
+    update.message.reply_text(flow.bep20, reply_markup=reply_markup, parse_mode='Markdown')
 
 def bep(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -137,7 +137,8 @@ def bep(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     helper.update_step(u_id, steps.TWITTER)
-    update.message.reply_text(flow.twitter, reply_markup=reply_markup)
+    update.message.reply_text(
+        flow.twitter, reply_markup=reply_markup, parse_mode='Markdown')
 
 def twitter(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -151,7 +152,8 @@ def twitter(update: Update, context: CallbackContext) -> None:
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     helper.update_step(u_id, steps.COMPLETED)
-    update.message.reply_text(flow.end, reply_markup=reply_markup)
+    update.message.reply_text(
+        flow.end, reply_markup=reply_markup, parse_mode='Markdown')
 
 def info(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -165,7 +167,7 @@ def info(update: Update, context: CallbackContext) -> None:
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
     update.message.reply_text(
-        flow.info, reply_markup=reply_markup)
+        flow.info, reply_markup=reply_markup, parse_mode='Markdown')
 
 def balance(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -184,8 +186,23 @@ def balance(update: Update, context: CallbackContext) -> None:
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     m_balance = flow.balance % (count, int(u_id))
     update.message.reply_text(
-        m_balance, reply_markup=reply_markup)
+        m_balance, reply_markup=reply_markup, parse_mode='Markdown')
 
+def message(update: Update, context:CallbackContext) -> None:
+    u_id: str = update.message.chat.id
+    step = helper.fetch_step(u_id)
+    if step is steps.COMPLETED:
+        keyboard = [
+            ['My Balance', 'Information'],
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        wrong_command = "Sorry, wrong command\n\n"
+        m_reply = flow.info
+        update.message.reply_text(
+            wrong_command + m_reply, reply_markup=reply_markup, parse_mode='Markdown')
+    else:
+        join(update, context)
+        return
 
 start_handler = CommandHandler('start', start)
 join_handler = MessageHandler(Filters.regex("^Join Airdrop$"), join)
@@ -194,6 +211,7 @@ info_handler = MessageHandler(Filters.regex("^Infomation$"), info)
 balance_handler = MessageHandler(Filters.regex("^Balance$"), balance)
 bep_handler = MessageHandler(Filters.regex("^0x[a-fA-F0-9]{40}$"), bep)
 twitter_handler = MessageHandler(Filters.regex("^(https:// | http://)?twitter.com/.*"), twitter)
+message_handler = MessageHandler(message)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(join_handler)
