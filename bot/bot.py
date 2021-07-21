@@ -88,8 +88,13 @@ def register(update: Update, context: CallbackContext) -> None:
         return
     try:
         member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.GROUP, user_id=update.message.chat.id)
-        if member.status != ChatMember.LEFT & member.status != ChatMember.KICKED:
-            helper.update_user(u_id, {'tg_group':'joined'}) if user['tg_group'] != 'joined' else ''
+        if member.status != ChatMember.LEFT and member.status != ChatMember.KICKED:
+            try:
+                tg_grp = user['tg_group']
+                helper.update_user(
+                    u_id, {'tg_group': 'joined'}) if tg_grp != 'joined' else ''
+            except KeyError:
+                helper.update_user(u_id, {'tg_group':'joined'})
         else:
             raise Exception('Join Group')
     except:
@@ -102,15 +107,19 @@ def register(update: Update, context: CallbackContext) -> None:
         return
     try:
         member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.CHANNEL, user_id=update.message.chat.id)
-        if member.status != ChatMember.LEFT or member.status != ChatMember.KICKED:
-            helper.update_user(u_id, {'tg_channel':'joined'}) if user['tg_channel'] != 'joined' else ''
+        if member.status != ChatMember.LEFT and member.status != ChatMember.KICKED:
+            try:
+                tg_chl = user['tg_channel']
+                helper.update_user(
+                    u_id, {'tg_channel': 'joined'}) if tg_chl != 'joined' else ''
+            except KeyError:
+                helper.update_user(u_id, {'tg_channel': 'joined'})
         else:
             raise Exception('Join Channel')
     except:
         try:
             # make sure exception wasn't due to bot not being an admin of the channel
             context.bot.get_chat_administrators(chat_id=_secrets.CHANNEL)
-
             keyboard = [
                 ['Registration'],
             ]
@@ -118,6 +127,7 @@ def register(update: Update, context: CallbackContext) -> None:
 
             update.message.reply_text(
                 m_reply, reply_markup=reply_markup, parse_mode="Markdown")
+            return
         except:
             pass
 
