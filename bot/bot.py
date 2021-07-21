@@ -222,7 +222,7 @@ info_handler = MessageHandler(Filters.regex("^Infomation$"), info)
 balance_handler = MessageHandler(Filters.regex("^Balance$"), balance)
 bep_handler = MessageHandler(Filters.regex("^0x[a-fA-F0-9]{40}$"), bep)
 twitter_handler = MessageHandler(Filters.regex("^(https:// | http://)?twitter.com/.*"), twitter)
-message_handler = MessageHandler(message)
+message_handler = MessageHandler(Filters.text, message)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(change_profile)
