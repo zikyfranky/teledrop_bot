@@ -1,11 +1,11 @@
 from requests import put, get
 from _secrets import API_HOST
+import json
 
 def extract_referral(message:str) -> str:
     ref = message.split()
     r_v = ref[1] if len(ref) > 1 else ""
     return r_v
-
 
 def increment_referee_count(user_id: str, ref_id: str, ref_obj) -> int:
     refs: list = ref_obj.refs.val()
@@ -20,18 +20,18 @@ def add_ref(user_id:str, ref_id:str):
         raise Exception('You can\'t refer yourself')
 
     user = get('%s/%s' % (API_HOST, user_id)).json()
-    user_exists = user.status_code == 200
+    user_exists = user.get('status_code') == 200
 
     if user_exists:
-        user_ref = user.data.ref
+        user_ref = user.get('data').ref
         if not user_ref:
-            ref = get(API_HOST + '/' + ref_id).json()
-            ref_exists = ref.status_code == 200
+            ref = get('%s/%s' % (API_HOST, ref_id)).json()
+            ref_exists = ref.get('status_code') == 200
             if ref_exists:
-                res = put(API_HOST + '/' + user_id, data={'ref':ref_id}).json()
-                if res.status_code == 200:
+                res = put('%s/%s' % (API_HOST, user_id), data={'ref': ref_id}).json()
+                if res.get('status_code') == 200:
                     print('Updated user referral')
-                    return increment_referee_count(user_id, ref_id, ref.data)
+                    return increment_referee_count(user_id, ref_id, ref.get('data'))
                 else:
                     print('Error saving referral')
             else:
@@ -40,19 +40,18 @@ def add_ref(user_id:str, ref_id:str):
             print('User is already referred')
 
 def update_step(user_id:str, step:str):
-    res = put(API_HOST + '/' + user_id, data={'step':step}).json()
-    if res.status_code == 200:
+    res = put('%s/%s' % (API_HOST, user_id), data={'step': step}).json()
+    if res.get('status_code') == 200:
         print('Updated user step')
         return step
     else:
         print('Error saving step')
 
 def fetch_step(user_id:str):
-    user = get('%s/%s' % (API_HOST, user_id)).json()
-    user_exists = user.status_code == 200
+    user:dict = get('%s/%s' % (API_HOST, user_id)).json()
+    user_exists = user.get('status_code') == 200
 
     if user_exists:
-        return user.data.step
+        return user.get('data').step
     else: 
         return None
-
