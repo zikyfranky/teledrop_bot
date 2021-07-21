@@ -166,14 +166,16 @@ def info(update: Update, context: CallbackContext) -> None:
 start_handler = CommandHandler('start', start)
 join_handler = MessageHandler(Filters.regex("^Join Airdrop$"), join)
 register_handler = MessageHandler(Filters.regex("^Registration$"), register)
-menu_handler = MessageHandler(Filters.regex("^Main Menu$"), menu)
+info_handler = MessageHandler(Filters.regex("^Infomation$"), info)
+balance_handler = MessageHandler(Filters.regex("^Balance$"), balance)
 bep_handler = MessageHandler(Filters.regex("^0x[a-fA-F0-9]{40}$"), bep)
 twitter_handler = MessageHandler(Filters.regex("^(https:// | http://)?twitter.com/.*"), twitter)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(join_handler)
 dispatcher.add_handler(register_handler)
-dispatcher.add_handler(menu_handler)
+dispatcher.add_handler(info_handler)
+dispatcher.add_handler(balance_handler)
 dispatcher.add_handler(bep_handler)
 dispatcher.add_handler(twitter_handler)
 
