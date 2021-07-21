@@ -38,28 +38,32 @@ def add_ref(user_id:str, ref_id:str):
         else:
             print('User is already referred')
 
-def update_step(user_id:str, step:str):
-    res = put('%s/%s' % (API_HOST, user_id), data={'step': step}).json()
-    if res.get('status_code') == 200:
-        print('Updated user step')
-        return step
-    else:
-        print('Error saving step')
 
-def fetch_step(user_id:str):
-    user:dict = get('%s/%s' % (API_HOST, user_id)).json()
-    user_exists = user.get('status_code') == 200
-
-    if user_exists:
-        return user.get('data')['step']
-    else: 
-        return None
-
-def fetch_user(user_id:str):
-    user:dict = get('%s/%s' % (API_HOST, user_id)).json()
+def fetch_user(user_id: str):
+    user: dict = get('%s/%s' % (API_HOST, user_id)).json()
     user_exists = user.get('status_code') == 200
 
     if user_exists:
         return user.get('data')
+    else:
+        return None
+
+def update_user(user_id: str, data):
+    res = put('%s/%s' % (API_HOST, user_id), data=data).json()
+    if res.get('status_code') == 200:
+        print('Updated User')
+        return True
+    else:
+        print('Error saving step')
+        return False
+
+def update_step(user_id:str, step:str):
+    res = update_user(user_id, data={'step': step}).json()
+    return step if res else None
+
+def fetch_step(user_id:str):
+    user:dict = fetch_user(user_id)
+    if user is not None:
+        return user['step']
     else: 
         return None
