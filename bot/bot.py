@@ -154,6 +154,11 @@ def twitter(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(flow.end, reply_markup=reply_markup)
 
 def info(update: Update, context: CallbackContext) -> None:
+    u_id: str = update.message.chat.id
+    step = helper.fetch_step(u_id)
+    if step != steps.COMPLETED:
+        join(update, context)
+        return
     keyboard = [
         ['My Balance', 'Information'],
     ]
@@ -161,6 +166,25 @@ def info(update: Update, context: CallbackContext) -> None:
     
     update.message.reply_text(
         flow.info, reply_markup=reply_markup)
+
+def balance(update: Update, context: CallbackContext) -> None:
+    u_id: str = update.message.chat.id
+    step = helper.fetch_step(u_id)
+    if step != steps.COMPLETED:
+        join(update, context)
+        return
+
+    user = helper.fetch_user(u_id)
+    count:int = user['refCount']
+    count = 0 if count is None else count
+
+    keyboard = [
+        ['My Balance', 'Information'],
+    ]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    m_balance = flow.balance % (count, int(u_id))
+    update.message.reply_text(
+        m_balance, reply_markup=reply_markup)
 
 
 start_handler = CommandHandler('start', start)
