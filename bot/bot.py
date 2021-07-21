@@ -30,7 +30,7 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(m_welcome, reply_markup=reply_markup, parse_mode='Markdown')
 
     # get ref total referrals
-    total = helper.add_ref(u_id, ref)
+    total = helper.add_ref(u_id, ref) if ref else ''
 
     # Notify ref that a new user joined
     context.bot.send_message(ref, flow.newRef % total, parse_mode='Markdown') if total else 'pass'
