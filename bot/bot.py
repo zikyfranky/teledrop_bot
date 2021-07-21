@@ -8,20 +8,32 @@ updater = Updater(token=_secrets.BOT_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
 def start(update: Update, context: CallbackContext) -> None:
-    keyboard = [
-        ["Join Airdrop"],
-        ["My Balance", "Information"],
+    keyboard:list = [
+        ['Join Airdrop'],
+        ['My Balance', 'Information'],
     ]
 
-    name = update.message.chat.first_name
-    ref = helper.extract_referral(update.message.text)
+    # get name and ID, if no name, use id
+    name:str = update.message.chat.first_name
+    u_id:str = update.message.chat.id
+    name = name if name else u_id
+
+    # Get referral from start 
+    ref:str = helper.extract_referral(update.message.text)
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-    m_welcome = flow.welcome % name
+    m_welcome:str = flow.welcome % name 
 
-    m_welcome = m_welcome + "\n\nYou were referred by user with id %s" % ref if ref else m_welcome + ""
+    m_welcome = m_welcome + '\n\nYou were referred by user with id `%s`' % ref if ref else m_welcome + ''
     
-    update.message.reply_text(m_welcome, reply_markup=reply_markup)
+    # Reply user
+    update.message.reply_text(m_welcome, reply_markup=reply_markup, parse_mode='Markdown')
+
+    # get ref total referrals
+    total = helper.add_ref(u_id, ref)
+
+    # Notify ref that a new user joined
+    context.bot.send_message(ref, flow.newRef % total, parse_mode='Markdown') if total else 'pass'
 
 def join(update: Update, context: CallbackContext) -> None:
     keyboard = [
