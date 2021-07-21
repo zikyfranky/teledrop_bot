@@ -153,15 +153,14 @@ def twitter(update: Update, context: CallbackContext) -> None:
     helper.update_step(u_id, steps.COMPLETED)
     update.message.reply_text(flow.end, reply_markup=reply_markup)
 
-def menu(update: Update, context: CallbackContext) -> None:
+def info(update: Update, context: CallbackContext) -> None:
     keyboard = [
-        ["Join Airdrop"],
-        ["My Balance", "Information"],
+        ['My Balance', 'Information'],
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
     update.message.reply_text(
-        "🖱 Click one of the buttons below!", reply_markup=reply_markup)
+        flow.info, reply_markup=reply_markup)
 
 
 start_handler = CommandHandler('start', start)
