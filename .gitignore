@@ -1,4 +1,6 @@
-_secrets.py
-flow.py
-__pycache__
+bot/_secrets.py
+bot/flow.py
+bot/__pycache__
 teledropbot_env
+db/firebase_private_key.json
+db/db.py
