@@ -194,10 +194,12 @@ def message(update: Update, context:CallbackContext) -> None:
             wrong_command + m_reply, reply_markup=reply_markup, parse_mode='Markdown')
     else:
         if step == steps.BEP20:
-            bep(update, context)
+            update.message.reply_text(
+                flow.wrong_bep20, parse_mode='Markdown')
 
         elif step == steps.TWITTER:
-            twitter(update, context)
+            update.message.reply_text(
+                flow.wrong_twitter, parse_mode='Markdown')
         else:
             join(update, context)
 
