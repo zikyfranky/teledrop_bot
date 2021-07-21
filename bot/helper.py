@@ -7,8 +7,16 @@ def extract_referral(message:str) -> str:
     return r_v
 
 def increment_referee_count(user_id: str, ref_id: str, ref_obj) -> int:
-    refs: list = ref_obj['refs'].val()
-    refCount: int = ref_obj['refCount']
+    refs: list = []
+    refCount: int = 0
+    try:
+        refs = ref_obj['refs'].val()
+    except KeyError:
+        pass
+    try:
+        refCount: int = ref_obj['refCount']
+    except KeyError:
+        pass
     refCount +=1
     refs.append(user_id)
     put(API_HOST + '/' + ref_id, data={'refs': refs, 'refCount':refCount}).json()
@@ -22,8 +30,12 @@ def add_ref(user_id:str, ref_id:str):
     user_exists = user.get('status_code') == 200
 
     if user_exists:
-        user_ref = user.get('data')['ref']
-        if not user_ref:
+        user_ref = None
+        try:
+            user_ref = user.get('data')['ref']
+        except KeyError:
+            pass
+        if user_ref == None:
             ref = get('%s/%s' % (API_HOST, ref_id)).json()
             ref_exists = ref.get('status_code') == 200
             if ref_exists:
