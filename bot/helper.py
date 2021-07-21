@@ -57,7 +57,7 @@ def update_user(user_id: str, data):
         return False
 
 def update_step(user_id:str, step:str):
-    res = update_user(user_id, data={'step': step}).json()
+    res = update_user(user_id, data={'step': step})
     return step if res else None
 
 def fetch_step(user_id:str):
