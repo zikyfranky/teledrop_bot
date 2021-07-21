@@ -1,4 +1,5 @@
 from telegram import ReplyKeyboardMarkup, Update
+from telegram.chatmember import ChatMember
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters
 import _secrets
 import flow
@@ -46,10 +47,15 @@ def join(update: Update, context: CallbackContext) -> None:
         ['Registration']
     ]
 
+    # fill placeholders
+    m_joining = flow.joining % (_secrets.GROUP.split('@')[-1], _secrets.CHANNEL.split(
+        '@')[-1], _secrets.TWITTER_HANDLE, _secrets.FACEBOOK_HANDLE, _secrets.PRO_CHANNEL.split('@')[-1], _secrets.PRO_TWITTER)
+
     if step == steps.JOINING:
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         update.message.reply_text(
-            flow.joining, reply_markup=reply_markup, parse_mode="Markdown")
+            m_joining, reply_markup=reply_markup, parse_mode="Markdown")
+        helper.update_step(u_id, steps.REGISTER)
 
     elif step == steps.REGISTER:
         register(update, context)
@@ -70,36 +76,51 @@ def join(update: Update, context: CallbackContext) -> None:
     
 
 def register(update: Update, context: CallbackContext) -> None:
+    u_id: str = update.message.chat.id
+    step = helper.fetch_step(u_id)
+    if step != steps.REGISTER:
+        join(update, context)
+        return
     try:
-        context.bot.get_chat_member(chat_id=_secrets.GROUP, user_id=update.message.chat.id)
+        member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.GROUP, user_id=update.message.chat.id)
+        if member.status != ChatMember.LEFT or member.status != ChatMember.KICKED:
+            pass
+        else:
+            raise Exception('Join Group')
     except:
         keyboard = [
-            ["Registration"],
+            ['Registration'],
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
         update.message.reply_text(flow.forceReg, reply_markup=reply_markup, parse_mode="Markdown")
         return
     try:
-        context.bot.get_chat_member(chat_id=_secrets.CHANNEL, user_id=update.message.chat.id) # Keeps returning user not fund
+        member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.CHANNEL, user_id=update.message.chat.id)
+        if member.status != ChatMember.LEFT or member.status != ChatMember.KICKED:
+            pass
+        else:
+            raise Exception('Join Channel')
     except:
         try:
+            # make sure exception wasn't due to bot not being an admin of the channel
             context.bot.get_chat_administrators(chat_id=_secrets.CHANNEL)
+
             keyboard = [
-                ["Registration"],
+                ['Registration'],
             ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
             update.message.reply_text(
                 flow.forceReg, reply_markup=reply_markup, parse_mode="Markdown")
         except:
-            return
+            pass
         
     keyboard = [
-        ["Main Menu"],
+        ['Main Menu']
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
+    helper.update_step(u_id, steps.BEP20)
     update.message.reply_text(flow.bep20, reply_markup=reply_markup)
     
 
