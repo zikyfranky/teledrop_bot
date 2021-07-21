@@ -140,13 +140,18 @@ def bep(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(flow.twitter, reply_markup=reply_markup)
 
 def twitter(update: Update, context: CallbackContext) -> None:
+    u_id: str = update.message.chat.id
+    step = helper.fetch_step(u_id)
+    if step != steps.TWITTER:
+        join(update, context)
+        return
+
     keyboard = [
-        ["Join Airdrop"],
-        ["My Balance", "Information"],
+        ['My Balance', 'Information']
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
-    update.message.reply_text(flow.info, reply_markup=reply_markup)
+    helper.update_step(u_id, steps.COMPLETED)
+    update.message.reply_text(flow.end, reply_markup=reply_markup)
 
 def menu(update: Update, context: CallbackContext) -> None:
     keyboard = [
