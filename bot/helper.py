@@ -1,6 +1,5 @@
 from requests import put, get
 from _secrets import API_HOST
-import json
 
 def extract_referral(message:str) -> str:
     ref = message.split()
@@ -53,5 +52,14 @@ def fetch_step(user_id:str):
 
     if user_exists:
         return user.get('data')['step']
+    else: 
+        return None
+
+def fetch_user(user_id:str):
+    user:dict = get('%s/%s' % (API_HOST, user_id)).json()
+    user_exists = user.get('status_code') == 200
+
+    if user_exists:
+        return user.get('data')
     else: 
         return None
