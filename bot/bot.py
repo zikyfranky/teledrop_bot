@@ -142,7 +142,8 @@ def bep(update: Update, context: CallbackContext) -> None:
         join(update, context)
         return
 
-    helper.update_user(u_id, {'step':steps.TWITTER, 'bep20': update.message.text})
+    helper.update_user_step(u_id, steps.TWITTER)
+    helper.update_user_bep20(u_id, update.message.text)
     update.message.reply_text(
         flow.twitter, parse_mode='Markdown')
 
