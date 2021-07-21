@@ -38,7 +38,6 @@ def add_ref(user_id:str, ref_id:str):
         else:
             print('User is already referred')
 
-
 def fetch_user(user_id: str):
     user: dict = get('%s/%s' % (API_HOST, user_id)).json()
     user_exists = user.get('status_code') == 200
