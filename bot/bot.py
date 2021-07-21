@@ -231,7 +231,7 @@ change_profile = CommandHandler('changeprofile', change)
 join_handler = MessageHandler(Filters.regex("^Join Airdrop$"), join)
 register_handler = MessageHandler(Filters.regex("^Registration$"), register)
 info_handler = MessageHandler(Filters.regex("^Infomation$"), info)
-balance_handler = MessageHandler(Filters.regex("^Balance$"), balance)
+balance_handler = MessageHandler(Filters.regex("^My Balance$"), balance)
 bep_handler = MessageHandler(Filters.regex("^0x[a-fA-F0-9]{40}$"), bep)
 twitter_handler = MessageHandler(Filters.regex(
     "^(https:// | http://)?(www\.)?twitter.com/.*"), twitter)
