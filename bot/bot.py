@@ -81,6 +81,8 @@ def register(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
     user = helper.fetch_user(u_id)
     step = user['step']
+
+    m_reply = flow.forceReg % (_secrets.GROUP.split('@')[-1], _secrets.CHANNEL.split('@')[-1])
     if step != steps.REGISTER:
         join(update, context)
         return
@@ -96,7 +98,7 @@ def register(update: Update, context: CallbackContext) -> None:
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-        update.message.reply_text(flow.forceReg, reply_markup=reply_markup, parse_mode="Markdown")
+        update.message.reply_text(m_reply, reply_markup=reply_markup, parse_mode="Markdown")
         return
     try:
         member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.CHANNEL, user_id=update.message.chat.id)
@@ -115,7 +117,7 @@ def register(update: Update, context: CallbackContext) -> None:
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
             update.message.reply_text(
-                flow.forceReg, reply_markup=reply_markup, parse_mode="Markdown")
+                m_reply, reply_markup=reply_markup, parse_mode="Markdown")
         except:
             pass
 
