@@ -76,7 +76,6 @@ def join(update: Update, context: CallbackContext) -> None:
         reply_markup = ReplyKeyboardMarkup(end_keyboard, resize_keyboard=True)
         update.message.reply_text(
             flow.end, reply_markup=reply_markup, parse_mode="Markdown")
-    
 
 def register(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -125,14 +124,19 @@ def register(update: Update, context: CallbackContext) -> None:
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     helper.update_step(u_id, steps.BEP20)
     update.message.reply_text(flow.bep20, reply_markup=reply_markup)
-    
 
 def bep(update: Update, context: CallbackContext) -> None:
+    u_id: str = update.message.chat.id
+    step = helper.fetch_step(u_id)
+    if step != steps.BEP20:
+        join(update, context)
+        return
+
     keyboard = [
-        ["Main Menu"],
+        ['Main Menu'],
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
+    helper.update_step(u_id, steps.TWITTER)
     update.message.reply_text(flow.twitter, reply_markup=reply_markup)
 
 def twitter(update: Update, context: CallbackContext) -> None:
