@@ -117,13 +117,9 @@ def register(update: Update, context: CallbackContext) -> None:
                 flow.forceReg, reply_markup=reply_markup, parse_mode="Markdown")
         except:
             pass
-        
-    keyboard = [
-        ['Main Menu']
-    ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
     helper.update_step(u_id, steps.BEP20)
-    update.message.reply_text(flow.bep20, reply_markup=reply_markup, parse_mode='Markdown')
+    update.message.reply_text(flow.bep20, parse_mode='Markdown')
 
 def bep(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -132,13 +128,9 @@ def bep(update: Update, context: CallbackContext) -> None:
         join(update, context)
         return
 
-    keyboard = [
-        ['Main Menu'],
-    ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     helper.update_step(u_id, steps.TWITTER)
     update.message.reply_text(
-        flow.twitter, reply_markup=reply_markup, parse_mode='Markdown')
+        flow.twitter, parse_mode='Markdown')
 
 def twitter(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -201,8 +193,13 @@ def message(update: Update, context:CallbackContext) -> None:
         update.message.reply_text(
             wrong_command + m_reply, reply_markup=reply_markup, parse_mode='Markdown')
     else:
-        join(update, context)
-        return
+        if step == steps.BEP20:
+            bep(update, context)
+
+        elif step == steps.TWITTER:
+            twitter(update, context)
+        else:
+            join(update, context)
 
 start_handler = CommandHandler('start', start)
 join_handler = MessageHandler(Filters.regex("^Join Airdrop$"), join)
