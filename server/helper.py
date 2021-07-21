@@ -8,6 +8,14 @@ def get_user(user_id):
     user = get_user_reference(user_id).get()
     return user
 
+def get_user_referral(user_id):
+    referral = get_user_reference(user_id).child('referredBy').get()
+    return referral
+
+def update_user_referral(user_id, ref_id):
+    get_user_reference(user_id).child('referredBy').set(ref_id)
+    return get_user_referral(user_id)
+
 def get_user_refs(user_id):
     refs = get_user_reference(user_id).child('refs').get()
     return refs
