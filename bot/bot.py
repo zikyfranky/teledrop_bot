@@ -3,6 +3,7 @@ from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandle
 import _secrets
 import flow
 import helper 
+import steps
 
 updater = Updater(token=_secrets.BOT_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
@@ -10,7 +11,7 @@ dispatcher = updater.dispatcher
 def start(update: Update, context: CallbackContext) -> None:
     keyboard:list = [
         ['Join Airdrop'],
-        ['My Balance', 'Information'],
+        ['My Balance', 'Information']
     ]
 
     # get name and ID, if no name, use id
@@ -36,12 +37,37 @@ def start(update: Update, context: CallbackContext) -> None:
     context.bot.send_message(ref, flow.newRef % total, parse_mode='Markdown') if total else 'pass'
 
 def join(update: Update, context: CallbackContext) -> None:
+    u_id:str = update.message.chat.id
+    step = helper.fetch_step(u_id)
+    if step is None:
+        step = helper.update_step(u_id, steps.JOINING)
+
     keyboard = [
-        ["Registration"],
+        ['Registration']
     ]
-    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+    if step == steps.JOINING:
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        update.message.reply_text(
+            flow.joining, reply_markup=reply_markup, parse_mode="Markdown")
+
+    elif step == steps.REGISTER:
+        register(update, context)
+
+    elif step == steps.BEP20:
+        bep(update, context)
+
+    elif step == steps.TWITTER:
+        twitter(update, context)
+
+    elif step == steps.COMPLETED:
+        end_keyboard: list = [
+            ['My Balance', 'Information']
+        ]
+        reply_markup = ReplyKeyboardMarkup(end_keyboard, resize_keyboard=True)
+        update.message.reply_text(
+            flow.end, reply_markup=reply_markup, parse_mode="Markdown")
     
-    update.message.reply_text(flow.joining, reply_markup=reply_markup, parse_mode="Markdown")
 
 def register(update: Update, context: CallbackContext) -> None:
     try:
