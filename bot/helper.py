@@ -6,75 +6,75 @@ def extract_referral(message:str) -> str:
     r_v = ref[1] if len(ref) > 1 else ""
     return r_v
 
-def increment_referee_count(user_id: str, ref_id: str, ref_obj) -> int:
-    refs: list = []
-    refCount: int = 0
-    try:
-        refs = ref_obj['refs'].val()
-    except KeyError:
-        pass
-    try:
-        refCount: int = ref_obj['refCount']
-    except KeyError:
-        pass
-    refCount +=1
-    refs.append(user_id)
-    put(API_HOST + '/' + ref_id, data={'refs': refs, 'refCount':refCount}).json()
-    return refCount
+def get_user_refs(user_id):
+    data = get('%s/%s/refs' % (API_HOST, user_id)).json()
+    print(data)
+    return data
 
-def add_ref(user_id:str, ref_id:str):
+def update_user_refs(user_id: str, ref_id: str):
     if user_id == ref_id:
         raise Exception('You can\'t refer yourself')
 
-    user = get('%s/%s' % (API_HOST, user_id)).json()
-    user_exists = user.get('status_code') == 200
+    referredBy = get('%s/%s/referredBy' % (API_HOST, user_id)).json()
 
-    if user_exists:
-        user_ref = None
-        try:
-            user_ref = user.get('data')['ref']
-        except KeyError:
-            pass
-        if user_ref == None:
-            ref = get('%s/%s' % (API_HOST, ref_id)).json()
-            ref_exists = ref.get('status_code') == 200
-            if ref_exists:
-                res = put('%s/%s' % (API_HOST, user_id), data={'ref': ref_id}).json()
-                if res.get('status_code') == 200:
-                    print('Updated user referral')
-                    return increment_referee_count(user_id, ref_id, ref.get('data'))
-                else:
-                    print('Error saving referral')
-            else:
-                print('Invalid referral')
+    if referredBy == None:
+        referredBy_Exits = get('%s/%s' % (API_HOST, ref_id)).json()
+        if referredBy_Exits:
+            put('%s/%s/referredBy' % (API_HOST, user_id), data={"referredBy":ref_id}).json()
+            print('Updated user referral')
+            refsCount = put('%s/%s/refs' % (API_HOST, ref_id), data={"ref":user_id}).json()
+            return refsCount
         else:
-            print('User is already referred')
+            print('Invalid referral')
+            return None
+    else:
+        print('User is already referred')
+        return None
 
-def fetch_user(user_id: str):
+def get_user(user_id: str):
     user: dict = get('%s/%s' % (API_HOST, user_id)).json()
-    user_exists = user.get('status_code') == 200
+    return user
 
-    if user_exists:
-        return user.get('data')
-    else:
-        return None
+def get_user_step(user_id):
+    step = get('%s/%s/step' % (API_HOST, user_id)).json()
+    return step
 
-def update_user(user_id: str, data) -> bool:
-    res = put('%s/%s' % (API_HOST, user_id), data=data).json()
-    if res.get('status_code') == 200:
-        print('Updated User')
-        return True
-    else:
-        print('Error saving step')
-        return False
+def update_user_step(user_id, _step):
+    step = put('%s/%s/step' % (API_HOST, user_id), data={"step":_step}).json()
+    return step
 
-def update_step(user_id:str, step:str):
-    res = update_user(user_id, data={'step': step})
-    return step if res else None
+def get_user_tg_group(user_id):
+    tg_group = get('%s/%s/tg_group' % (API_HOST, user_id)).json()
+    return tg_group
 
-def fetch_step(user_id:str):
-    user:dict = fetch_user(user_id)
-    if user != None:
-        return user['step']
-    else: 
-        return None
+def update_user_tg_group(user_id, _tg_group):
+    tg_group = put('%s/%s/tg_group' % (API_HOST, user_id),
+               data={"tg_group": _tg_group}).json()
+    return tg_group
+
+def get_user_tg_channel(user_id):
+    tg_channel = get('%s/%s/tg_channel' % (API_HOST, user_id)).json()
+    return tg_channel
+
+def update_user_tg_channel(user_id, _tg_channel):
+    tg_channel = put('%s/%s/tg_channel' % (API_HOST, user_id),
+               data={"tg_channel": _tg_channel}).json()
+    return tg_channel
+
+def get_user_bep20(user_id):
+    bep20 = get('%s/%s/bep20' % (API_HOST, user_id)).json()
+    return bep20
+
+def update_user_bep20(user_id, _bep20):
+    bep20 = put('%s/%s/bep20' % (API_HOST, user_id),
+               data={"bep20": _bep20}).json()
+    return bep20
+
+def get_user_twitter(user_id):
+    twitter = get('%s/%s/twitter' % (API_HOST, user_id)).json()
+    return twitter
+
+def update_user_twitter(user_id, _twitter):
+    twitter = put('%s/%s/twitter' % (API_HOST, user_id),
+               data={"twitter": _twitter}).json()
+    return twitter
