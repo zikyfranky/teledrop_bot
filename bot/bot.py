@@ -83,8 +83,7 @@ def join(update: Update, context: CallbackContext) -> None:
 
 def register(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    user = helper.get_user(u_id)
-    step = user['step']
+    step = helper.get_user_step(u_id)
 
     m_reply = flow.forceReg % (_secrets.GROUP.split('@')[-1], _secrets.CHANNEL.split('@')[-1])
     if step != steps.REGISTER:
@@ -93,12 +92,11 @@ def register(update: Update, context: CallbackContext) -> None:
     try:
         member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.GROUP, user_id=update.message.chat.id)
         if member.status != ChatMember.LEFT and member.status != ChatMember.KICKED:
-            try:
-                tg_grp = user['tg_group']
-                helper.update_user(
-                    u_id, {'tg_group': 'joined'}) if tg_grp != 'joined' else ''
-            except KeyError:
-                helper.update_user(u_id, {'tg_group':'joined'})
+            tg_grp = helper.get_user_tg_group(u_id)
+            if tg_grp != 'joined':
+                helper.update_user_tg_group(u_id, 'joined')
+            else:
+                pass
         else:
             raise Exception('Join Group')
     except:
@@ -112,12 +110,11 @@ def register(update: Update, context: CallbackContext) -> None:
     try:
         member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.CHANNEL, user_id=update.message.chat.id)
         if member.status != ChatMember.LEFT and member.status != ChatMember.KICKED:
-            try:
-                tg_chl = user['tg_channel']
-                helper.update_user(
-                    u_id, {'tg_channel': 'joined'}) if tg_chl != 'joined' else ''
-            except KeyError:
-                helper.update_user(u_id, {'tg_channel': 'joined'})
+            tg_chl = helper.get_user_tg_channel(u_id)
+            if tg_chl != 'joined':
+                helper.update_user_tg_channel(u_id, 'joined')
+            else:
+                pass
         else:
             raise Exception('Join Channel')
     except:
