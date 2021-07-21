@@ -19,10 +19,10 @@ def start(update: Update, context: CallbackContext) -> None:
     name:str = update.message.chat.first_name
     u_id:str = update.message.chat.id
     name = name if name else u_id
-    step = helper.fetch_step(u_id)
+    step = helper.get_user_step(u_id)
 
     if step == None:
-        helper.update_step(u_id, steps.STARTED)
+        helper.update_user_step(u_id, steps.STARTED)
 
     # Get referral from start 
     ref:str = helper.extract_referral(update.message.text)
@@ -35,19 +35,19 @@ def start(update: Update, context: CallbackContext) -> None:
     # Reply user
     update.message.reply_text(m_welcome, reply_markup=reply_markup, parse_mode='Markdown')
 
-    # get ref total referrals
-    total = helper.add_ref(u_id, ref) if ref else ''
-    print(total)
+    # add new ref and get ref total referrals
+    total = helper.update_user_refs(u_id, ref) if ref else ''
+
     # Notify ref that a new user joined
     context.bot.send_message(ref, flow.newRef % total, parse_mode='Markdown') if total else 'pass'
 
 def join(update: Update, context: CallbackContext) -> None:
     u_id:str = update.message.chat.id
-    step = helper.fetch_step(u_id)
+    step = helper.get_user_step(u_id)
     if step == None:
         start(update, context)
     elif step == steps.STARTED:
-        step = helper.update_step(u_id, steps.JOINING)
+        step = helper.update_user_step(u_id, steps.JOINING)
 
     keyboard = [
         ['Registration']
@@ -61,7 +61,7 @@ def join(update: Update, context: CallbackContext) -> None:
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
         update.message.reply_text(
             m_joining, reply_markup=reply_markup, parse_mode="Markdown")
-        helper.update_step(u_id, steps.REGISTER)
+        helper.update_user_step(u_id, steps.REGISTER)
 
     elif step == steps.REGISTER:
         register(update, context)
@@ -83,7 +83,7 @@ def join(update: Update, context: CallbackContext) -> None:
 
 def register(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    user = helper.fetch_user(u_id)
+    user = helper.get_user(u_id)
     step = user['step']
 
     m_reply = flow.forceReg % (_secrets.GROUP.split('@')[-1], _secrets.CHANNEL.split('@')[-1])
@@ -135,12 +135,12 @@ def register(update: Update, context: CallbackContext) -> None:
         except:
             pass
 
-    helper.update_step(u_id, steps.BEP20)
+    helper.update_user_step(u_id, steps.BEP20)
     update.message.reply_text(flow.bep20, parse_mode='Markdown')
 
 def bep(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    step = helper.fetch_step(u_id)
+    step = helper.get_user_step(u_id)
     if step != steps.BEP20:
         join(update, context)
         return
@@ -151,7 +151,7 @@ def bep(update: Update, context: CallbackContext) -> None:
 
 def twitter(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    step = helper.fetch_step(u_id)
+    step = helper.get_user_step(u_id)
     if step != steps.TWITTER:
         join(update, context)
         return
@@ -168,7 +168,7 @@ def twitter(update: Update, context: CallbackContext) -> None:
 
 def info(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    step = helper.fetch_step(u_id)
+    step = helper.get_user_step(u_id)
     if step != steps.COMPLETED:
         join(update, context)
         return
@@ -182,15 +182,15 @@ def info(update: Update, context: CallbackContext) -> None:
 
 def balance(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    step = helper.fetch_step(u_id)
+    step = helper.get_user_step(u_id)
     if step != steps.COMPLETED:
         join(update, context)
         return
 
-    user = helper.fetch_user(u_id)
+    user = helper.get_user(u_id)
     count:int = 0
     try:
-        count = user['refCount']
+        count = int(user['refCount'])
     except KeyError:
         count = 0
 
@@ -204,7 +204,7 @@ def balance(update: Update, context: CallbackContext) -> None:
 
 def message(update: Update, context:CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    step = helper.fetch_step(u_id)
+    step = helper.get_user_step(u_id)
     if step == steps.COMPLETED:
         keyboard = [
             ['My Balance', 'Information'],
@@ -227,9 +227,9 @@ def message(update: Update, context:CallbackContext) -> None:
 
 def change(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    step = helper.fetch_step(u_id)
+    step = helper.get_user_step(u_id)
     if step not in [steps.STARTED, steps.JOINING, steps.REGISTER]:
-        helper.update_step(u_id, steps.BEP20)
+        helper.update_user_step(u_id, steps.BEP20)
         update.message.reply_text(flow.bep20, parse_mode='Markdown')
     else:
         join(update, context)
