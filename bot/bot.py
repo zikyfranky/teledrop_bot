@@ -172,7 +172,7 @@ def balance(update: Update, context: CallbackContext) -> None:
 
     user = helper.fetch_user(u_id)
     count:int = user['refCount']
-    count = 0 if count is None else count
+    count = 0 if count == None else count
 
     keyboard = [
         ['My Balance', 'Information'],
@@ -185,7 +185,7 @@ def balance(update: Update, context: CallbackContext) -> None:
 def message(update: Update, context:CallbackContext) -> None:
     u_id: str = update.message.chat.id
     step = helper.fetch_step(u_id)
-    if step is steps.COMPLETED:
+    if step == steps.COMPLETED:
         keyboard = [
             ['My Balance', 'Information'],
         ]
