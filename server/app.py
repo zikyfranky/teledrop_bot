@@ -2,7 +2,7 @@ import json
 from init import initialize
 from flask import Flask, request
 from flask_restful import Resource, Api
-from helper import get_user, get_user_refs, update_user_refs, get_user_ref_count, get_user_bep20, update_user_bep20, get_user_twitter, update_user_twitter, get_user_step, update_user_step, get_user_tg_group, update_user_tg_group, get_user_tg_channel, update_user_tg_channel
+from helper import get_user, get_user_refs, update_user_refs, get_user_referral, update_user_referral, get_user_ref_count, get_user_bep20, update_user_bep20, get_user_twitter, update_user_twitter, get_user_step, update_user_step, get_user_tg_group, update_user_tg_group, get_user_tg_channel, update_user_tg_channel
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,6 +14,15 @@ class User(Resource):
     def get(self, user_id):
         user = get_user(user_id)
         return user
+
+class UserReferredBy(Resource):
+    def get(self, user_id):
+        referredBy = get_user_referral(user_id)
+        return referredBy
+
+    def put(self, user_id):
+        ref = request.form['referredBy']
+        return update_user_referral(user_id, ref)
 
 class UserRef(Resource):
     def get(self, user_id):
@@ -71,6 +80,7 @@ class UserTGGroup(Resource):
 
 api.add_resource(User, '/<string:user_id>')
 api.add_resource(UserRef, '/<string:user_id>/refs')
+api.add_resource(UserReferredBy, '/<string:user_id>/referredBy')
 api.add_resource(UserBEP20, '/<string:user_id>/bep20')
 api.add_resource(UserTwitter, '/<string:user_id>/twitter')
 api.add_resource(UserStep, '/<string:user_id>/step')
