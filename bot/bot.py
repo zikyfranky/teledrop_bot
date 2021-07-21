@@ -79,14 +79,15 @@ def join(update: Update, context: CallbackContext) -> None:
 
 def register(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
-    step = helper.fetch_step(u_id)
+    user = helper.fetch_user(u_id)
+    step = user['step']
     if step != steps.REGISTER:
         join(update, context)
         return
     try:
         member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.GROUP, user_id=update.message.chat.id)
         if member.status != ChatMember.LEFT or member.status != ChatMember.KICKED:
-            pass
+            helper.update_user(u_id, {'tg_group':'joined'}) if user['tg_group'] != 'joined' else ''
         else:
             raise Exception('Join Group')
     except:
@@ -100,7 +101,7 @@ def register(update: Update, context: CallbackContext) -> None:
     try:
         member:ChatMember = context.bot.get_chat_member(chat_id=_secrets.CHANNEL, user_id=update.message.chat.id)
         if member.status != ChatMember.LEFT or member.status != ChatMember.KICKED:
-            pass
+            helper.update_user(u_id, {'tg_channel':'joined'}) if user['tg_channel'] != 'joined' else ''
         else:
             raise Exception('Join Channel')
     except:
@@ -128,7 +129,7 @@ def bep(update: Update, context: CallbackContext) -> None:
         join(update, context)
         return
 
-    helper.update_step(u_id, steps.TWITTER)
+    helper.update_user(u_id, {'step':steps.TWITTER, 'bep20': update.message.text})
     update.message.reply_text(
         flow.twitter, parse_mode='Markdown')
 
@@ -143,7 +144,8 @@ def twitter(update: Update, context: CallbackContext) -> None:
         ['My Balance', 'Information']
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    helper.update_step(u_id, steps.COMPLETED)
+    helper.update_user(u_id, {'step': steps.COMPLETED,
+                              'twitter': update.message.text})
     update.message.reply_text(
         flow.end, reply_markup=reply_markup, parse_mode='Markdown')
 
@@ -203,7 +205,17 @@ def message(update: Update, context:CallbackContext) -> None:
         else:
             join(update, context)
 
+def change(update: Update, context: CallbackContext) -> None:
+    u_id: str = update.message.chat.id
+    step = helper.fetch_step(u_id)
+    if step not in [steps.STARTED, steps.JOINING, steps.REGISTER]:
+        helper.update_step(u_id, steps.BEP20)
+        update.message.reply_text(flow.bep20, parse_mode='Markdown')
+    else:
+        join(update, context)
+
 start_handler = CommandHandler('start', start)
+change_profile = CommandHandler('changeprofile', change)
 join_handler = MessageHandler(Filters.regex("^Join Airdrop$"), join)
 register_handler = MessageHandler(Filters.regex("^Registration$"), register)
 info_handler = MessageHandler(Filters.regex("^Infomation$"), info)
@@ -213,11 +225,13 @@ twitter_handler = MessageHandler(Filters.regex("^(https:// | http://)?twitter.co
 message_handler = MessageHandler(message)
 
 dispatcher.add_handler(start_handler)
+dispatcher.add_handler(change_profile)
 dispatcher.add_handler(join_handler)
 dispatcher.add_handler(register_handler)
 dispatcher.add_handler(info_handler)
 dispatcher.add_handler(balance_handler)
 dispatcher.add_handler(bep_handler)
 dispatcher.add_handler(twitter_handler)
+dispatcher.add_handler(message_handler)
 
 updater.start_polling()
