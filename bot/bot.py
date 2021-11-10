@@ -32,16 +32,20 @@ def start(update: Update, context: CallbackContext) -> None:
 
     m_welcome:str = flow.welcome % name 
 
-    m_welcome = m_welcome + '\n\nYou were referred by user with id `%s`' % ref if ref else m_welcome + ''
+    ref_step = helper.get_user_step(ref)
+
+    if ref_step == steps.COMPLETED:
+
+        m_welcome = m_welcome + '\n\nYou were referred by user with id `%s`' % ref if ref else m_welcome + ''
+        
+        # add new ref and get ref total referrals
+        total = helper.update_user_refs(u_id, ref) if ref else ''
+    
+        # Notify ref that a new user joined
+        context.bot.send_message(ref, flow.newRef % total, parse_mode='Markdown') if total else 'pass'
     
     # Reply user
     update.message.reply_text(m_welcome, reply_markup=reply_markup, parse_mode='Markdown')
-
-    # add new ref and get ref total referrals
-    total = helper.update_user_refs(u_id, ref) if ref else ''
-
-    # Notify ref that a new user joined
-    context.bot.send_message(ref, flow.newRef % total, parse_mode='Markdown') if total else 'pass'
 
 def join(update: Update, context: CallbackContext) -> None:
     u_id:str = update.message.chat.id
@@ -190,9 +194,9 @@ def balance(update: Update, context: CallbackContext) -> None:
     user = helper.get_user(u_id)
     count:int = 0
     try:
-        count = int(user['refCount'])
+        count = int(user['ref_count'])
     except KeyError:
-        count = 0
+        pass
 
     keyboard = [
         ['My Balance', 'Information'],
