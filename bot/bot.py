@@ -23,6 +23,8 @@ def start(update: Update, context: CallbackContext) -> None:
 
     if step == None:
         helper.update_user_step(u_id, steps.STARTED)
+    if step == 'COMPLETED':
+        join(update, context)
 
     # Get referral from start 
     ref:str = helper.extract_referral(update.message.text)
