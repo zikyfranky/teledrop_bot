@@ -1,14 +1,6 @@
 import random
 
 
-def askNum(text):
-    """Retunrs an integer from input using 'text'. Loops until valid input given."""
-    while True:
-        try:
-            return int(input(text))
-        except ValueError:
-            print("Please try again")
-
 def calc(a,ops,b):
     """Returns integer operation result from using : 'a','ops','b'"""
     if   ops == "+": return a+b
@@ -18,10 +10,10 @@ def calc(a,ops,b):
     else: raise ValueError("Unsupported math operation")
 
 
-def captcha(cb_success, cb_fail):
+def captcha_gen():
     """
     Captcha challenge.
-    Returns True if user input is correct, False if not.
+    Returns Equation and Solution.
     """
     nums = range(1,100)
 
@@ -39,12 +31,8 @@ def captcha(cb_success, cb_fail):
         a,b = random.choices(nums,k=2)
 
     # as a formatted text 
-    result = askNum("What is {} {} {} = ".format(a,ops,b))
+    equation = ("{} {} {}".format(a,ops,b))
 
-    corr = calc(a,ops,b)
-    if  result == corr:
-        print("Correct")
-        cb_success()
-    else:
-        print("Wrong. Correct solution is: {} {} {} = {}".format(a,ops,b,corr))
-        cb_fail()
+    result = calc(a,ops,b)
+
+    return [equation, result]

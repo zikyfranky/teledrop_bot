@@ -6,8 +6,10 @@ from _secrets import BOT_TOKEN, GROUP, CHANNEL, TWITTER_HANDLE, FACEBOOK_HANDLE,
 
 from flow import welcome, newRef, captcha, captcha_fail, captcha_success, joining, end, info, wrong_twitter, twitter, wrong_bep20, bep20
 
-from helper import get_user_step, update_user_step, update_user_refs, extract_referral
+from helper import get_user, get_user_step, update_user_step, update_user_refs, extract_referral
 from steps import STARTED, JOINING, REGISTER, CAPTCHA, BEP20, TWITTER, COMPLETED
+
+from captcha import captcha_gen
 
 updater = Updater(token=BOT_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
@@ -218,10 +220,12 @@ def message(update: Update, context:CallbackContext) -> None:
             ['My Balance', 'Information'],
         ]
         reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-        wrong_command = "Sorry, wrong command\n\n"
-        m_reply = info
+        wrong_command = "WRONG COMMAND\n\nYou Completed The Airdrop Already\n\n"
+        m_reply = wrong_command+info%u_id
         update.message.reply_text(
-            wrong_command + m_reply, reply_markup=reply_markup, parse_mode='Markdown')
+            m_reply, reply_markup=reply_markup, parse_mode='Markdown')
+    elif step == CAPTCHA:
+        _captchaChecker(update, context)
     else:
         if step == BEP20:
             update.message.reply_text(
@@ -242,10 +246,39 @@ def change(update: Update, context: CallbackContext) -> None:
     else:
         join(update, context)
 
-def isHuman(update: Update, context: CallbackContext) -> None:
+
+def _captchaSuccess(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
     update_user_step(u_id, STARTED)
+    update.message.reply_text(
+        captcha_success, parse_mode='Markdown')
     join(update, context)
+
+def _captchaFail(update: Update, context: CallbackContext) -> None:
+    u_id: str = update.message.chat.id
+    update.message.reply_text(captcha_fail, parse_mode='Markdown')
+    join(update, context)
+
+def _captchaChecker(update: Update, context: CallbackContext) -> None:
+    answer = 0
+    try:
+        answer = int(update.message.text)
+        if(answer == CAPTCHA_SOL):
+            _captchaSuccess(update, context)
+        else:
+            _captchaFail(update, context)
+    except ValueError:
+        _captchaFail(update, context)
+
+
+def isHuman(update: Update, context: CallbackContext) -> None:
+    eq, sol = captcha_gen()
+
+    CAPTCHA_EQ = eq
+    CAPTCHA_SOL = sol
+    update.message.reply_text(captcha%eq, parse_mode='Markdown')
+
+    u_id: str = update.message.chat.id
     
 start_handler = CommandHandler('start', start)
 change_profile = CommandHandler('changeprofile', change)
@@ -257,7 +290,6 @@ bep_handler = MessageHandler(Filters.regex("^0x[a-fA-F0-9]{40}$"), bep)
 twitter_handler = MessageHandler(Filters.regex(
     "^(https:// | http://)?(www\.)?twitter.com/.*"), tweeter)
 message_handler = MessageHandler(Filters.text, message)
-captcha_handler = MessageHandler(Filters.text, isHuman)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(change_profile)
