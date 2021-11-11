@@ -90,8 +90,11 @@ def join(update: Update, context: CallbackContext) -> None:
     elif step == BEP20:
         bep(update, context)
 
-    elif step == TWITTER:
+    elif step == TWITTER_USERNAME:
         twitter_username(update, context)
+
+    elif step == TWITTER_RETWEET_LINK:
+        twitter_retweet_link(update, context)
 
     elif step == COMPLETED:
         end_keyboard: list = [
