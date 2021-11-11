@@ -23,7 +23,7 @@ dispatcher = updater.dispatcher
 
 def start(update: Update, context: CallbackContext) -> None:
     keyboard:list = [
-        ['Verify You Are Human']
+        ['I Am Human']
     ]
 
     # get name and ID, if no name, use id
@@ -334,7 +334,7 @@ def isHuman(update: Update, context: CallbackContext) -> None:
     
 start_handler = CommandHandler('start', start)
 change_profile = CommandHandler('changeprofile', change)
-join_handler = MessageHandler(Filters.regex("^Verify You Are Human$"), verify)
+join_handler = MessageHandler(Filters.regex("^I Am Human$"), verify)
 register_handler = MessageHandler(Filters.regex("^Register$"), register)
 info_handler = MessageHandler(Filters.regex("^Infomation$"), information)
 balance_handler = MessageHandler(Filters.regex("^My Balance$"), balance)
