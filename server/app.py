@@ -2,7 +2,7 @@ import json
 from init import initialize
 from flask import Flask, request
 from flask_restful import Resource, Api
-from helper import get_user, get_user_refs, update_user_refs, get_user_referral, update_user_referral, get_user_ref_count, get_user_bep20, update_user_bep20, get_user_twitter, update_user_twitter, get_user_step, update_user_step, get_user_tg_group, update_user_tg_group, get_user_tg_channel, update_user_tg_channel
+from helper import get_user, get_user_refs, update_user_refs, get_user_referral, update_user_referral, get_user_ref_count, get_user_bep20, update_user_bep20, get_user_twitter_username, update_user_twitter_username, get_user_twitter_retweet_link, update_user_twitter_retweet_link, get_user_step, update_user_step, get_user_tg_group, update_user_tg_group, get_user_tg_channel, update_user_tg_channel
 
 app = Flask(__name__)
 api = Api(app)
@@ -43,14 +43,24 @@ class UserBEP20(Resource):
         bep20 = request.form['bep20']
         return update_user_bep20(user_id, bep20)
 
-class UserTwitter(Resource):
+class UserTwitterUsername(Resource):
     def get(self, user_id):
-        twitter = get_user_twitter(user_id)
+        twitter = get_user_twitter_username(user_id)
         return twitter
 
     def put(self, user_id):
         twitter = request.form['twitter']
-        return update_user_twitter(user_id, twitter)
+        return update_user_twitter_username(user_id, twitter)
+
+
+class UserTwitterLink(Resource):
+    def get(self, user_id):
+        twitter = get_user_twitter_retweet_link(user_id)
+        return twitter
+
+    def put(self, user_id):
+        twitter = request.form['twitter']
+        return update_user_twitter_retweet_link(user_id, twitter)
 
 class UserStep(Resource):
     def get(self, user_id):
@@ -82,7 +92,8 @@ api.add_resource(User, '/<string:user_id>')
 api.add_resource(UserRef, '/<string:user_id>/refs')
 api.add_resource(UserReferredBy, '/<string:user_id>/referredBy')
 api.add_resource(UserBEP20, '/<string:user_id>/bep20')
-api.add_resource(UserTwitter, '/<string:user_id>/twitter')
+api.add_resource(UserTwitterLink, '/<string:user_id>/twitter-link')
+api.add_resource(UserTwitterUsername, '/<string:user_id>/twitter-username')
 api.add_resource(UserStep, '/<string:user_id>/step')
 api.add_resource(UserTGChannel, '/<string:user_id>/tg_channel')
 api.add_resource(UserTGGroup, '/<string:user_id>/tg_group')

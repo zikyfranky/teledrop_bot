@@ -38,13 +38,21 @@ def update_user_bep20(user_id, _bep20):
     get_user_reference(user_id).child('bep20').set(_bep20)
     return get_user_bep20(user_id)
 
-def get_user_twitter(user_id):
-    twitter = get_user_reference(user_id).child('twitter').get()
+def get_user_twitter_username(user_id):
+    twitter = get_user_reference(user_id).child('twitter-username').get()
     return twitter
 
-def update_user_twitter(user_id, _twitter):
-    get_user_reference(user_id).child('twitter').set(_twitter)
-    return get_user_twitter(user_id)
+def update_user_twitter_username(user_id, _twitter):
+    get_user_reference(user_id).child('twitter-username').set(_twitter)
+    return get_user_twitter_username(user_id)
+
+def get_user_twitter_retweet_link(user_id):
+    twitter = get_user_reference(user_id).child('twitter-retweet-link').get()
+    return twitter
+
+def update_user_twitter_retweet_link(user_id, _twitter):
+    get_user_reference(user_id).child('twitter-retweet-link').set(_twitter)
+    return get_user_twitter_retweet_link(user_id)
 
 def get_user_step(user_id):
     step = get_user_reference(user_id).child('step').get()

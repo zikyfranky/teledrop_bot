@@ -1,7 +1,11 @@
 import os
 import firebase_admin
 from firebase_admin import credentials
-from db import NAME
+from dotenv import load_dotenv
+
+load_dotenv()
+
+NAME = os.environ.get("NAME")
 
 file_path = os.path.abspath(__file__)
 dir_path = os.path.dirname(file_path)

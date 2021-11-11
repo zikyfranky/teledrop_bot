@@ -70,11 +70,21 @@ def update_user_bep20(user_id, _bep20):
                data={"bep20": _bep20}).json()
     return bep20
 
-def get_user_twitter(user_id):
-    twitter = get('%s/%s/twitter' % (API_HOST, user_id)).json()
+def get_user_twitter_username(user_id):
+    twitter = get('%s/%s/twitter-username' % (API_HOST, user_id)).json()
     return twitter
 
-def update_user_twitter(user_id, _twitter):
-    twitter = put('%s/%s/twitter' % (API_HOST, user_id),
-               data={"twitter": _twitter}).json()
-    return twitter
+def update_user_twitter_username(user_id, _twitter):
+    username = put('%s/%s/twitter-username' % (API_HOST, user_id),
+               data={"username": _twitter}).json()
+    return username
+
+def get_user_twitter_retweet_link(user_id):
+    link = get('%s/%s/twitter-retweet-link' % (API_HOST, user_id)).json()
+    return link
+
+def update_user_twitter_link(user_id, _link):
+    link = put('%s/%s/twitter-retweet-link' % (API_HOST, user_id),
+               data={"rlink": _link}).json()
+    return link
+

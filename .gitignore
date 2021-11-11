@@ -6,3 +6,5 @@ bot/__pycache__
 server/firebase_private_key.json
 server/db.py
 server/__pycache__
+.env
+heroku
