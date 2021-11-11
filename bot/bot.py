@@ -71,7 +71,7 @@ def join(update: Update, context: CallbackContext) -> None:
         step = update_user_step(u_id, JOINING)
 
     keyboard = [
-        ['Registration']
+        ['Register']
     ]
 
     # fill placeholders
@@ -129,7 +129,7 @@ def register(update: Update, context: CallbackContext) -> None:
             # make sure exception wasn't due to bot not being an admin of the channel
             context.bot.get_chat_administrators(chat_id=CHANNEL)
             keyboard = [
-                ['Registration'],
+                ['Register'],
             ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
@@ -154,7 +154,7 @@ def register(update: Update, context: CallbackContext) -> None:
             # make sure exception wasn't due to bot not being an admin of the channel
             context.bot.get_chat_administrators(chat_id=CHANNEL)
             keyboard = [
-                ['Registration'],
+                ['Register'],
             ]
             reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
@@ -185,7 +185,7 @@ def bep(update: Update, context: CallbackContext) -> None:
         update_user_bep20(u_id, text)
         update_user_step(u_id, TWITTER_USERNAME)
         update.message.reply_text(
-            twitter_username_text%ME, parse_mode='Markdown')
+            twitter_username_text%(ME), parse_mode='Markdown')
 
 def twitter_username(update: Update, context: CallbackContext) -> None:
     u_id: str = update.message.chat.id
@@ -335,7 +335,7 @@ def isHuman(update: Update, context: CallbackContext) -> None:
 start_handler = CommandHandler('start', start)
 change_profile = CommandHandler('changeprofile', change)
 join_handler = MessageHandler(Filters.regex("^Verify You Are Human$"), verify)
-register_handler = MessageHandler(Filters.regex("^Registration$"), register)
+register_handler = MessageHandler(Filters.regex("^Register$"), register)
 info_handler = MessageHandler(Filters.regex("^Infomation$"), information)
 balance_handler = MessageHandler(Filters.regex("^My Balance$"), balance)
 twitter_handler = MessageHandler(Filters.regex(
