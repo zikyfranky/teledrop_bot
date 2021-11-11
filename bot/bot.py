@@ -11,6 +11,9 @@ from steps import STARTED, JOINING, REGISTER, CAPTCHA, BEP20, TWITTER, COMPLETED
 
 from captcha import captcha_gen
 
+CAPTCHA_EQ:str = ''
+CAPTCHA_SOL:int = 0
+
 updater = Updater(token=BOT_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
@@ -274,11 +277,13 @@ def _captchaChecker(update: Update, context: CallbackContext) -> None:
 def isHuman(update: Update, context: CallbackContext) -> None:
     eq, sol = captcha_gen()
 
+    global CAPTCHA_EQ
+    global CAPTCHA_SOL
+
     CAPTCHA_EQ = eq
     CAPTCHA_SOL = sol
-    update.message.reply_text(captcha%eq, parse_mode='Markdown')
 
-    u_id: str = update.message.chat.id
+    update.message.reply_text(captcha%CAPTCHA_EQ, parse_mode='Markdown')
     
 start_handler = CommandHandler('start', start)
 change_profile = CommandHandler('changeprofile', change)
