@@ -1,15 +1,24 @@
-# A basic airdrop bot for telegram, built with Python
+# A basic full-fledged airdrop bot for telegram, built with Python
 
 ## First Steps
 
-Run `pip install -r requirements.txt` to install dependencies
+[/bot](https://github.com/zikyfranky/teledrop_bot/tree/bot_polling) - Houses the telegram bot using the polling method which is never recommended if you have large users;
 
-[/bot](/bot) - Houses the telegram bot
-to run, type: `python bot/bot.py from root directory`, or `python bot.py` if you are in the bot directory
+1. Clone the branch `git clone https://github.com/zikyfranky/teledrop_bot -b bot_polling`
+2. Cd into the folder `cd bot_polling`
+3. Install Requirements: `pip install -r requirements.txt`
+4. Run `python bot.py`
 
-[/server](/server) - Houses the telegram server that points to firebase realtime database
-to run, type: `python server/app.py from root directory`, or `python app.py` if you are in the server directory
+[/webhook](https://github.com/zikyfranky/teledrop_bot/tree/webhook) - Houses the telegram bot using the webhook method which is the recommended way to go;
 
-`bot/flow.json` is a file that holds the flow of the chatbot with keys like, `welcome, end, info, bep20` etc
+1. Clone the branch `git clone https://github.com/zikyfranky/teledrop_bot -b webhook`
+2. Cd into the folder `cd webhook`
+3. Install Requirements: `pip install -r requirements.txt`
+4. Run `python app.py`
 
-`BOT_TOKEN` should be imported from `bot/secrets` and not `bot/_secrets`
+[/server](https://github.com/zikyfranky/teledrop_bot/tree/server) - Houses the telegram server that points to firebase realtime database;
+
+1. Clone the branch `git clone https://github.com/zikyfranky/teledrop_bot -b server`
+2. Cd into the folder `cd server`
+3. Install Requirements: `pip install -r requirements.txt`
+4. Run `python app.py`
