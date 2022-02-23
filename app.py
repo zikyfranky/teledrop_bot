@@ -97,7 +97,7 @@ def has_ended(u_id):
 
 def start(update) -> Response:
     keyboard: list = [
-        ['Join Airdrop']
+        ['Join Airdrop'],
         ['My Balance']
     ]
 
@@ -414,8 +414,6 @@ def information(update) -> Response:
     u_id: str = update['message']['chat']['id']
     step = get_user_step(u_id)
 
-    if is_ended:
-        return has_ended(u_id)
     if step != COMPLETED:
         return join(update)
 
@@ -432,8 +430,6 @@ def balance(update) -> Response:
     u_id: str = update['message']['chat']['id']
     step = get_user_step(u_id)
 
-    if is_ended:
-        return has_ended(u_id)
     if step != COMPLETED:
         return join(update)
 
@@ -445,7 +441,7 @@ def balance(update) -> Response:
         pass
 
     keyboard = [
-        ['My Balance'],
+        ['My Balance', 'Information']
     ]
     m_balance = balance_text % (5000*count, count)  # , ME, int(u_id))
 
@@ -465,7 +461,7 @@ def message(update) -> Response:
             ['My Balance'],
         ]
 
-        wrong_command = "Airdrop Has Ended\n\n" if is_ended else "I do not understand this command"
+        wrong_command = "Airdrop Has Ended\n\n" if is_ended else "You have completed this airdrop\n\n"
         m_reply = info % (wrong_command)
 
         data = {'text': m_reply, 'chat_id':  u_id,
