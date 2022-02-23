@@ -1,4 +1,4 @@
-# A basic airdrop bot for telegram, built with Python, using webhook pattern
+# Firebase API server to store bot details, users and all that
 
 ## First Steps
 

@@ -1,4 +1,4 @@
 __pycache__
 .env
 heroku
-firebase_private_key
+firebase_private_key.json
