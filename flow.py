@@ -71,21 +71,19 @@ balance_text = """🏆 Referral Reward: %d ${0}
 🏆 Completed Tasks Reward: 100,000 ${0}
 
 👨‍👩‍👧 Number of Referral: %d (5,000 per referral)
-""".format(environ.get("SYMBOL"))
-"""
-Referral Link♾ https://t.me/%s?start=%d"""
+\n
+Referral Link♾ https://t.me/%s?start=%d""".format(environ.get("SYMBOL"))
 
 info = """%s🔐 Subscribers who unfollow the mandatory social media tasks will not be eligible.
 
 👨‍👩‍👧 Earn 5,000 ${0} extra rewards with the confirmed referrals.
 
 ⏳ Distribution date: Airdrop rewards will be distributed within 2 months after the end of the airdrop.
-""".format(environ.get("SYMBOL"))
-"""
+\n
 ♻️ You can change your registration details by sending any of these commands:
 
 1. /update_username -> to update your twitter's username
 2. /update_link -> to update your twitter's retweet link
 3. /update_bep20 -> to update your BEP20's address
 
-Referral Link♾ https://t.me/%s?start=%d"""
+Referral Link♾ https://t.me/%s?start=%d""".format(environ.get("SYMBOL"))

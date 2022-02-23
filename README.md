@@ -1,4 +1,4 @@
-# A basic airdrop bot for telegram, built with Python, using webhook pattern
+# A basic airdrop bot for telegram, built with Python, using polling pattern [not recommended]
 
 ## First Steps
 
